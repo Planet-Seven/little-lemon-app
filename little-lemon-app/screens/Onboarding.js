@@ -1,22 +1,65 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, Image } from 'react-native';
+import { useState, useEffect } from 'react';
 
 export default function Onboarding() {
+
+    const [firstName, onChangeFirstName] = useState();
+    const [email, onChangeEmail] = useState();
+    const [isValid, toggleValid] = useState(false);
+
+    function validateName(name) {
+        var pattern = /^[a-zA-Z]+$/;
+        return pattern.test(name);
+    }
+
+    function validateEmail(email) {
+        var pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return pattern.test(email);
+      }
+
+    const toggleValidity = () => {
+        if (isValid == false && validateName(firstName) == true && validateEmail(email) == true) {
+            toggleValid(true)
+        } else {
+            toggleValid(false)
+        }
+    }
+
     return (
         <>
             <View style={styles.header}>
-               <Text style={styles.headerText}>Little Lemon</Text>
+               <Image
+                style={styles.headerImage}
+                source={require('../assets/Logo.png')}/>
             </View>
             <View style={styles.body}>
                 <Text style={styles.text}>Let us get to know you</Text>
                 <View style={styles.inputContainer}>
+
                     <Text style={styles.text}>First Name</Text>
-                    <TextInput style={styles.input}/>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => {
+                            onChangeFirstName(text); // Update the state with the new text
+                            toggleValidity(); // Call toggleValidity when text changes
+                        }}
+                        placeholder={'First name'}
+                        value={firstName}/>
+
                     <Text style={styles.text}>Email</Text>
-                    <TextInput style={styles.input} />
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={(text) => {
+                            onChangeEmail(text); // Update the state with the new text
+                            toggleValidity(); // Call toggleValidity when text changes
+                        }}
+                        placeholder={'Email'}
+                        value={email}/>
+
                 </View>
             </View>
             <View style={styles.footer}>
-                <Pressable style={styles.button}>
+                <Pressable style={isValid ? styles.button : styles.buttonDisabled}>
                     <Text style={styles.buttonText}>Next</Text>
                 </Pressable>
             </View>
@@ -52,9 +95,8 @@ const styles = StyleSheet.create({
         paddingLeft: 30,
         paddingRight: 30,
     },
-    headerText: {
-        fontSize: 20,
-        color: '#324652',
+    headerImage: {
+        marginTop: 40
     },
     text: {
         fontSize: 20,
@@ -74,6 +116,14 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
     },
     button: {
+        backgroundColor: '#324652',
+        padding: 10,
+        borderRadius: 5,
+        width: 100,
+        alignItems: 'center',
+
+    },
+    buttonDisabled: {
         backgroundColor: '#cbd2d9',
         padding: 10,
         borderRadius: 5,
@@ -82,6 +132,6 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         fontSize: 20,
-        color: '#445968',
-    }
+        color: '#dee3e9',
+    },
   });
