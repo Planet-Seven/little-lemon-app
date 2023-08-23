@@ -30,7 +30,7 @@ export default function Onboarding() {
     const { signIn } = React.useContext(AuthContext);
 
     useEffect(() => {
-        toggleValidity(validateName(firstName) && validateEmail(email));
+        toggleValidity();
       }, [firstName, email]);
 
     return (
@@ -44,7 +44,7 @@ export default function Onboarding() {
                 <Text style={styles.text}>Let us get to know you</Text>
                 <View style={styles.inputContainer}>
 
-                    <Text style={styles.text}>First Name</Text>
+                    <Text style={styles.text}>First name</Text>
                     <TextInput
                         style={styles.input}
                         onChangeText={(text) => {

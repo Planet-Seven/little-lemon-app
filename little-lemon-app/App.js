@@ -13,6 +13,7 @@ export const AuthContext = React.createContext();
 
 export default function App() {
 
+
 const [state, dispatch] = React.useReducer(
   (prevState, action) => {
     switch (action.type) {
