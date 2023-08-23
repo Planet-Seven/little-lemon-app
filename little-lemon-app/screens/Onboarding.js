@@ -1,5 +1,7 @@
-import { Pressable, StyleSheet, Text, TextInput, View, Image } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, Image, Alert } from 'react-native';
 import { useState, useEffect } from 'react';
+import * as React from 'react';
+import { AuthContext } from '../App'
 
 export default function Onboarding() {
 
@@ -25,6 +27,12 @@ export default function Onboarding() {
         }
     }
 
+    const { signIn } = React.useContext(AuthContext);
+
+    useEffect(() => {
+        toggleValidity(validateName(firstName) && validateEmail(email));
+      }, [firstName, email]);
+
     return (
         <>
             <View style={styles.header}>
@@ -41,7 +49,6 @@ export default function Onboarding() {
                         style={styles.input}
                         onChangeText={(text) => {
                             onChangeFirstName(text); // Update the state with the new text
-                            toggleValidity(); // Call toggleValidity when text changes
                         }}
                         placeholder={'First name'}
                         value={firstName}/>
@@ -51,7 +58,6 @@ export default function Onboarding() {
                         style={styles.input}
                         onChangeText={(text) => {
                             onChangeEmail(text); // Update the state with the new text
-                            toggleValidity(); // Call toggleValidity when text changes
                         }}
                         placeholder={'Email'}
                         value={email}/>
@@ -59,7 +65,8 @@ export default function Onboarding() {
                 </View>
             </View>
             <View style={styles.footer}>
-                <Pressable style={isValid ? styles.button : styles.buttonDisabled}>
+                <Pressable style={isValid ? styles.button : styles.buttonDisabled}
+                onPress={() => isValid ? signIn({ firstName, email }): Alert.alert('please provide valid data')}>
                     <Text style={styles.buttonText}>Next</Text>
                 </Pressable>
             </View>
