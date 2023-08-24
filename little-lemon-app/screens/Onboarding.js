@@ -1,7 +1,8 @@
-import { Pressable, StyleSheet, Text, TextInput, View, Image, Alert } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, Image, Alert} from 'react-native';
 import { useState, useEffect } from 'react';
 import * as React from 'react';
 import { AuthContext } from '../App'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Onboarding() {
 
@@ -27,7 +28,29 @@ export default function Onboarding() {
         }
     }
 
+    const storeData = async (firstName, email) => {
+        try {
+            const dataToStore = [
+                ['firstName', firstName],
+                ['lastName', ''],
+                ['email', email],
+                ['phone', '']
+            ];
+
+            await AsyncStorage.multiSet(dataToStore);
+            console.log('Data stored successfully');
+
+        } catch (error) {
+            console.error('Error storing data:', error);
+        }
+    }
+
     const { signIn } = React.useContext(AuthContext);
+
+    const handleSubmit = () => {
+        isValid ? signIn({ firstName, email }): Alert.alert('please provide valid data')
+        storeData(firstName, email)
+    }
 
     useEffect(() => {
         toggleValidity();
@@ -47,26 +70,23 @@ export default function Onboarding() {
                     <Text style={styles.text}>First name</Text>
                     <TextInput
                         style={styles.input}
-                        onChangeText={(text) => {
-                            onChangeFirstName(text); // Update the state with the new text
-                        }}
+                        onChangeText={onChangeFirstName}
                         placeholder={'First name'}
                         value={firstName}/>
 
                     <Text style={styles.text}>Email</Text>
                     <TextInput
                         style={styles.input}
-                        onChangeText={(text) => {
-                            onChangeEmail(text); // Update the state with the new text
-                        }}
+                        onChangeText={onChangeEmail}
                         placeholder={'Email'}
-                        value={email}/>
+                        value={email}
+                        inputMode='email'/>
 
                 </View>
             </View>
             <View style={styles.footer}>
                 <Pressable style={isValid ? styles.button : styles.buttonDisabled}
-                onPress={() => isValid ? signIn({ firstName, email }): Alert.alert('please provide valid data')}>
+                onPress={handleSubmit}>
                     <Text style={styles.buttonText}>Next</Text>
                 </Pressable>
             </View>

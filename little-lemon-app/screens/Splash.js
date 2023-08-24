@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function Profile() {
+export default function Splash() {
     return (
         <View style={styles.splash}>
             <Text style={styles.text}>Please wait</Text>

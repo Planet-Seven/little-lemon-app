@@ -1,8 +1,89 @@
 import { StyleSheet, Text, View, Image, TextInput, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
+import * as React from 'react';
+import { AuthContext } from '../App'
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Profile() {
+
+    const [firstName, onChangeFirstName] = useState();
+    const [lastName, onChangeLastName] = useState();
+    const [email, onChangeEmail] = useState();
+    const [phone, onChangePhone] = useState();
+
+    const [data, setData] = useState({})
+
+    const storeData = async (firstName, lastName, email, phone) => {
+        try {
+            const dataToStore = [
+                ['firstName', firstName],
+                ['lastName', lastName],
+                ['email', email],
+                ['phone', phone]
+            ];
+
+            await AsyncStorage.multiSet(dataToStore);
+            console.log('Data stored successfully');
+
+        } catch (error) {
+            console.error('Error storing data:', error);
+        }
+    };
+
+    const retrieveData = async () => {
+        try {
+            const keysToRetrieve = [
+                'firstName',
+                'lastName',
+                'email',
+                'phone'
+            ];
+
+            const retrievedData = await AsyncStorage.multiGet(keysToRetrieve);
+
+            const data = {};
+
+            for (let i = 0; i < retrievedData.length; i++) {
+                const key = retrievedData[i][0];
+                const value = retrievedData[i][1];
+                data[key] = value;
+            }
+
+            console.log(data)
+            return data;
+
+        } catch (error) {
+          console.error('Error retrieving data:', error);
+          return null;
+        }
+    };
+
+    const clearTable = async () => {
+        try {
+            await AsyncStorage.clear()
+          } catch(e) {
+            // clear error
+          }
+          console.log('cleared')
+    }
+
+    const { signOut } = React.useContext(AuthContext)
+
+    useEffect(() => {
+        const fetchData = async () => {
+        const storedData = await retrieveData();
+
+        setData(storedData);
+        onChangeFirstName(storedData['firstName'])
+        onChangeLastName(storedData['lastName'])
+        onChangeEmail(storedData['email'])
+        onChangePhone(storedData['phone'])
+      };
+
+      fetchData()
+    }, [])
+
     return (
         <>
             <View style={styles.header}>
@@ -11,35 +92,45 @@ export default function Profile() {
                     source={require('../assets/Logo.png')}/>
             </View>
             <View style={styles.body}>
-                <Text>Personal information</Text>
+                <Text style={styles.headerText}>Personal information</Text>
 
                 <View style={styles.inputContainer}>
                     <Text style={styles.text}>First name</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder={'First name'}/>
+                        placeholder={'First name'}
+                        onChangeText={onChangeFirstName}
+                        value={firstName}/>
 
                     <Text style={styles.text}>Last name</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder={'Last name'}/>
+                        placeholder={'Last name'}
+                        onChangeText={onChangeLastName}
+                        value={lastName}/>
 
                     <Text style={styles.text}>Email</Text>
                     <TextInput
                         style={styles.input}
-                        placeholder={'Email'}/>
+                        placeholder={'Email'}
+                        inputMode='email'
+                        onChangeText={onChangeEmail}
+                        value={email}/>
 
                     <Text style={styles.text}>Phone Number</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder={'Phone number'}/>
+                    <TextInput
+                        style={styles.input}
+                        placeholder={'Phone number'}
+                        inputMode='tel'
+                        onChangeText={onChangePhone}
+                        value={phone}/>
 
-                    <Text>Email notifications</Text>
+                    <Text style={styles.headerText}>Email notifications</Text>
 
-                    <Text>Order statuses</Text>
-                    <Text>Password changes</Text>
-                    <Text>Special offers</Text>
-                    <Text>Newsletter</Text>
+                    <Text style={styles.text}>Order statuses</Text>
+                    <Text style={styles.text}>Password changes</Text>
+                    <Text style={styles.text}>Special offers</Text>
+                    <Text style={styles.text}>Newsletter</Text>
                 </View>
 
             </View>
@@ -48,11 +139,18 @@ export default function Profile() {
                     <Pressable style={styles.secondaryButton}>
                         <Text style={styles.secondaryButtonText}>Discard changes</Text>
                     </Pressable>
-                    <Pressable style={styles.button}>
+                    <Pressable style={styles.button}
+                        onPress={()=>{
+                            storeData(firstName, lastName, email, phone)
+                        }}>
                         <Text style={styles.buttonText}>Save changes</Text>
                     </Pressable>
                 </View>
-                <Pressable style={styles.tertiaryButton}>
+                <Pressable style={styles.tertiaryButton}
+                    onPress={()=>{
+                        clearTable()
+                        signOut()
+                    }}>
                     <Text style={styles.tertiaryButtonText}>Log out</Text>
                 </Pressable>
             </View>
@@ -92,8 +190,16 @@ const styles = StyleSheet.create ({
         marginTop: 40
     },
     text: {
+        fontSize: 15,
+        color: '#324652',
+    },
+    headerText: {
         fontSize: 20,
         color: '#324652',
+        fontWeight: 'bold',
+        alignSelf: 'right',
+        paddingTop: 10,
+        paddingBottom: 10
     },
     input: {
         borderWidth: 1,
