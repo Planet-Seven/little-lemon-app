@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Onboarding from './screens/Onboarding';
 import Profile from './screens/Profile';
 import Splash from './screens/Splash';
+import Home from './screens/Home';
 import * as React from 'react';
 import * as SecureStore from 'expo-secure-store';
 
@@ -103,11 +104,18 @@ if (state.isLoading) {
               headerShown: false,
               animationTypeForReplace: state.isSignout ? 'pop' : 'push' }}/>
           ):(
+          <>
+          <Stack.Screen
+            name='home'
+            component={Home}
+            options={{
+              headerShown: false }}/>
           <Stack.Screen
             name='profile'
             component={Profile}
             options={{
               headerShown: false }}/>
+          </>
           )}
         </Stack.Navigator>
       </NavigationContainer>

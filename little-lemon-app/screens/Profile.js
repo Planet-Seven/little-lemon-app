@@ -5,7 +5,7 @@ import { AuthContext } from '../App'
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Profile() {
+export default function Profile( {navigation} ) {
 
     const [firstName, onChangeFirstName] = useState();
     const [lastName, onChangeLastName] = useState();
@@ -87,9 +87,13 @@ export default function Profile() {
     return (
         <>
             <View style={styles.header}>
+                <Pressable style={styles.headerButton} onPress={(navigation.goBack)}>
+                    <Text style={styles.headerButtonText}>Back</Text>
+                </Pressable>
                 <Image
                     style={styles.headerImage}
                     source={require('../assets/Logo.png')}/>
+                <Pressable style={styles.headerButton}></Pressable>
             </View>
             <View style={styles.body}>
                 <Text style={styles.headerText}>Personal information</Text>
@@ -168,8 +172,14 @@ const styles = StyleSheet.create ({
         paddingLeft: 30,
         paddingRight: 30,
     },
+    headerButton: {
+        width: 80,
+        height: 40,
+        marginTop: 40
+    },
     header: {
         flex: 2,
+        flexDirection: 'row',
         height: 80,
         backgroundColor: '#dee3e9',
         paddingLeft: 30,
@@ -197,9 +207,15 @@ const styles = StyleSheet.create ({
         fontSize: 20,
         color: '#324652',
         fontWeight: 'bold',
-        alignSelf: 'right',
+        alignSelf: 'flex-start',
         paddingTop: 10,
         paddingBottom: 10
+    },
+    headerButtonText: {
+        fontSize: 18,
+        color: '#324652',
+        fontWeight: 'bold',
+        padding: 10
     },
     input: {
         borderWidth: 1,
